@@ -59,5 +59,14 @@ export default defineConfig(() => {
     server: {
       port: 3000,
     },
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://69.197.145.100:8589', // The backend URL
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        }
+      }
+    }
   }
 })
