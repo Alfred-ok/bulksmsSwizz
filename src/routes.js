@@ -1,4 +1,6 @@
+import { element } from 'prop-types'
 import React from 'react'
+import uploadContacts from './views/contacts/uploadContacts'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
@@ -19,6 +21,16 @@ const Organisation = React.lazy(()=>import('./views/organisations/OrganisationLi
 const OrganisationRegistration = React.lazy(()=>import('./views/organisations/OrganisationRegistration'))
 const User = React.lazy(()=>import('./views/organisations/userAccounts/UserList'))
 const RegisterUser = React.lazy(()=>import('./views/organisations/userAccounts/RegisterUser'))
+const groups = React.lazy(()=>import('./views/groups/groups'))
+const CreateNewGroup = React.lazy(()=>import('./views/groups/CreateNewGroup'))
+
+const Contact = React.lazy(()=>import('./views/contacts/contact'))
+
+const Groupsms = React.lazy(() => import('./views/groupsms/Groupsms'))
+const ContactList = React.lazy(()=> import('./views/contacts/contactList'))
+const GroupsSmsFile = React.lazy(()=>  import('./views/groupsms/GroupsSmsFile'))
+const GroupsSmsFileCustom = React.lazy(() =>  import('./views/groupsms/GroupsmsFileCustom'))
+
 
 
 
@@ -42,8 +54,23 @@ const routes = [
   { path:'/organistion-registeration', name:'Register', element: OrganisationRegistration},
   { path:'/user', name:'User', element: User},
   { path:'/user-registration', name:'Register User', element: RegisterUser},
- 
-  
+
+  { path:'/groups', name:'Groups', element: groups},
+
+  {path:'/create-new-group', name:'Create New Group', element: CreateNewGroup},
+
+  {path:'/contacts', name:'Contacts', element: Contact },
+
+  {path:'/upload-contacts', name:'Contacts', element: uploadContacts },
+
+
+  {path:'/groups-sms', name:'Groupsms', element: Groupsms },
+
+  {path:'/contact-list', name:'ContactList', element:ContactList },
+
+  {path:'/groups-sms-file', name:'ContactList', element:GroupsSmsFile},
+
+  {path: '/groups-sms-file-custom', name:'Custom-file', element: GroupsSmsFileCustom}
 
 ]
 
