@@ -49,6 +49,13 @@ const AppHeader = () => {
     })
   }, [])
 
+  const signout = () =>{
+    Cookies.remove('refreshToken', { path: '/' })
+    Cookies.remove('username', {path: '/',});
+    Cookies.remove('role', {path: '/',});
+    Cookies.remove('responseMessage', {path: '/',})
+    Cookies.remove('groupId', {path: '/',});
+  }
 
   //clear all cookies
   
@@ -120,7 +127,7 @@ const AppHeader = () => {
           
           <CNavItem>
             <CNavLink href="">
-              <CButton color="primary" onClick={()=>Cookies.remove('refreshToken', { path: '/' }) }>
+              <CButton color="primary" onClick={()=>signout()}>
                 <CIcon icon={cilPowerStandby} style={{marginRight:"5px"}}/>Sign out
               </CButton>
             </CNavLink>

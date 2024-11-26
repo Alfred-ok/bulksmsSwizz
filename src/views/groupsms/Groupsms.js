@@ -8,6 +8,7 @@ import {
   CCol,
   CForm,
   CFormInput,
+  CFormLabel,
   CFormSelect,
   CFormTextarea,
   CListGroup,
@@ -26,12 +27,14 @@ import Swal from 'sweetalert2'
 function Groupsms() {
 
   const inputRef = useRef();
-  const[organisationfetch, setOrganisationfetch] = useState([]);
+  const[senderId, setSenderId] = useState([]);
+  const[organisationfetch,setOrganisationfetch] = useState([])
   const groupID = Cookies.get('groupId');
   const [orgCode, setOrgCode] = useState()
   const[contact, setContact] = useState()
   const [groupId, setGroupId] = useState()
   const [message, setMessage] = useState()
+  const [code, setCode] = useState();
 
 
 
@@ -53,7 +56,7 @@ function Groupsms() {
             },
             body: JSON.stringify(
                 {
-                    code:groupId,
+                    code:code,
                     phoneNumber : contact,
                     message : message,
     
@@ -110,7 +113,28 @@ function Groupsms() {
  
    
 
-
+     //fetching all data organisation
+     useEffect(()=>{
+      try {
+     
+        fetch(`${import.meta.env.VITE_BASE_URL}org_group_id/${groupID}`)
+          .then((datas)=>{
+              console.log(datas);
+            return datas.json();
+          }).then((data)=>{
+              console.log(data);
+              setSenderId(data)
+          })
+          .catch((err)=>{
+            console.log(err)
+          })
+  
+    }catch (error) {
+      // Handle any errors that occurred during the fetch
+      console.error('There was a problem with the fetch operation:', error);
+    }
+    },[])
+  
 
 
 
@@ -231,9 +255,22 @@ function Groupsms() {
               </CCardTitle>
               
               <CForm onSubmit={handleSubmit}  style={{backgroundColor:"rgba(0,0,0,0.1)", padding:"25px", borderRadius:"5px"}}>
+              <div className="mb-3">
+                        <CFormLabel htmlFor="exampleFormControlInput1">Select Sender ID</CFormLabel>
+                        <CFormSelect id="exampleFormControlInput1" aria-label="Default select example" value={code} onChange={(e)=>setCode(e.target.value)} style={{  borderColor: "rgba(71, 71, 212,0.6)" }}> 
+                            <option value="">Select Sender Id</option> {/* Default option */}
+                                {senderId &&
+                                senderId.map((data, index) => (
+                                    <option key={index} value={data.org_Code}>
+                                    {data.url}
+                                    </option> 
+                                ))}
+                                
+                        </CFormSelect>
+                </div>
                 <div className="mb-3">
-                <CFormSelect id="exampleFormControlInput1" aria-label="Default select example" value={groupId} onChange={(e)=>setGroupId(e.target.value)} style={{  borderColor: "rgba(71, 71, 212,0.6)" }}> 
-                                <option value="">Select Sender Id</option> {/* Default option */}
+                <CFormSelect id="exampleFormControlInput2" aria-label="Default select example" value={groupId} onChange={(e)=>setGroupId(e.target.value)} style={{  borderColor: "rgba(71, 71, 212,0.6)" }}> 
+                                <option value="">Select Group</option> {/* Default option */}
                                     {organisationfetch &&
                                     organisationfetch.map((data, index) => (
                                         <option key={index} value={data.groupId}>

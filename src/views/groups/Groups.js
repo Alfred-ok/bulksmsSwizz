@@ -37,6 +37,10 @@ function Groups() {
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
     const groupID = Cookies.get('groupId');
+
+    const [groupContacts, setGroupContacts] = useState({});
+    const [groupTotals, setGroupTotals] = useState({});
+
     
 
    
@@ -49,7 +53,7 @@ function Groups() {
         setSearchTerm(searchValue);
 
         const filteredResults = org_data.filter((org) =>
-        org_data.groupName.toLowerCase().includes(searchValue)
+        org.groupName.toLowerCase().includes(searchValue)
         );
         setFilteredData(filteredResults);
       };
@@ -134,6 +138,51 @@ function Groups() {
       },[])
 
 
+      const fetchGroupTotal = async (groupId) => {
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BASE_URL}group-members/getGroup${groupId}`);
+      
+          if (!response.ok) {
+            throw new Error(`Failed to fetch group members: ${response.status} ${response.statusText}`);
+          }
+      
+          const contentType = response.headers.get('Content-Type');
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            setGroupTotals((prev) => ({
+              ...prev,
+              [groupId]: data.length || 0, // Store total in state
+            }));
+          } else {
+            setGroupTotals((prev) => ({
+              ...prev,
+              [groupId]: 0, // Default to 0 for non-JSON responses
+            }));
+          }
+        } catch (error) {
+          console.error(`Error fetching total for group ${groupId}:`, error);
+          setGroupTotals((prev) => ({
+            ...prev,
+            [groupId]: 0, // Default to 0 on error
+          }));
+        }
+      };
+      
+      
+
+
+
+
+      useEffect(() => {
+        if (filteredData.length > 0) {
+          filteredData.forEach((group) => {
+            fetchGroupTotal(group.groupId);
+          });
+        }
+      }, [filteredData]);
+      
+
+
 
  
 
@@ -187,7 +236,8 @@ function Groups() {
                         <CTableHeaderCell scope="col">#</CTableHeaderCell>
                         <CTableHeaderCell scope="col">Group Name</CTableHeaderCell>
                         <CTableDataCell scope="col">GroupId</CTableDataCell>
-                        <CTableDataCell scope="col">organistion Group Code</CTableDataCell>
+                        {/*<CTableDataCell scope="col">organistion Group Code</CTableDataCell>*/}
+                        <CTableDataCell scope="col">Total contacts</CTableDataCell>
                         <CTableHeaderCell scope="col">Action</CTableHeaderCell>
 
                       </CTableRow>
@@ -200,7 +250,11 @@ function Groups() {
                             
                             <CTableDataCell>{data.groupName}</CTableDataCell>
                             <CTableDataCell>{data.groupId}</CTableDataCell>
-                            <CTableDataCell>{data.organisationGroup}</CTableDataCell>
+                            {/*<CTableDataCell>{data.organisationGroup}</CTableDataCell>*/}
+                            
+                            <CTableDataCell>
+                                {groupTotals[data.groupId] !== undefined ? groupTotals[data.groupId] : 'Loading...'}
+                            </CTableDataCell>
                             <CTableDataCell>
                               <CButton color="dark" variant='outline' onClick={() => {setVisible(!visible); setData(data) }} style={{display:"flex",alignItems:"center", margin:"2px auto"}}>
                                 <CIcon icon={cilSync} style={{marginRight:"5px"}}/> Update

@@ -49,10 +49,13 @@ function ContactList() {
         setSearchTerm(searchValue);
 
         const filteredResults = org_data.filter((org) =>
-        org_data.groupName.toLowerCase().includes(searchValue)
+        org.names.toLowerCase().includes(searchValue)
         );
         setFilteredData(filteredResults);
       };
+
+
+
 
 
     const navigate = useNavigate();

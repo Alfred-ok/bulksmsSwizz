@@ -1,21 +1,40 @@
-import { CAlert, CButton, CCard, CCardBody, CCardTitle, CCol, CForm, CFormInput, CFormLabel, CFormSelect, CFormTextarea, CRow } from '@coreui/react';
+
 import React, { useEffect, useState } from 'react';
+import {
+  CAlert,
+  CButton,
+  CCard,
+  CCardBody,
+  CCardTitle,
+  CCol,
+  CForm,
+  CFormInput,
+  CFormLabel,
+  CFormSelect,
+  CFormTextarea,
+  CRow,
+} from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import { cilSpeech } from '@coreui/icons';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 
+
+
+
+
+
 function GroupsmsFileCustom() {
   const groupID = Cookies.get('groupId');
   const [organisationfetch, setOrganisationfetch] = useState([]);
-  const [code, setCode] = useState();
-  const [contact, setContact] = useState();
-  const [message, setMessage] = useState();
+  const [code, setCode] = useState('');
+  const [message, setMessage] = useState('');
   const [fileData, setFileData] = useState([]);
   const [headers, setHeaders] = useState([]);
-  const [parsedRows, setParsedRows] = useState([]); // To hold extracted data
-  const [textareaData, setTextareaData] = useState(''); // For textarea content
+  const [parsedRows, setParsedRows] = useState([]);
+  const [selectedPhoneColumn, setSelectedPhoneColumn] = useState(''); // Column for phone numbers
+  const [textareaData, setTextareaData] = useState('');
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -32,38 +51,130 @@ function GroupsmsFileCustom() {
           const extractedHeaders = jsonData[0];
           const extractedRows = jsonData.slice(1).map((row) =>
             extractedHeaders.reduce((obj, header, index) => {
-              obj[header] = row[index] || ''; // Map headers to row values
+              obj[header] = row[index] || '';
               return obj;
             }, {})
           );
 
           setHeaders(extractedHeaders);
           setFileData(jsonData.slice(1));
-          setParsedRows(extractedRows); // Parsed rows with headers as keys
+          setParsedRows(extractedRows);
         }
       };
       reader.readAsArrayBuffer(file);
     }
   };
 
-  const handleColumnButtonClick = (columnName) => {
-    // Extract data for the specific column
-    const columnData = parsedRows.map((row) => row[columnName]).join('\n');
-    const newText = `${textareaData}\n${columnData}`.trim(); // Append to existing textarea content
-    setTextareaData(newText);
+  const handleColumnSelect = (columnName) => {
+    if (columnName) {
+      const placeholder = `{${columnName}}`;
+      if (!textareaData.includes(placeholder)) {
+        setTextareaData((prev) => `${prev}${prev ? ' ' : ''}${placeholder}`.trim());
+      }
+    }
   };
 
-  const handleTextareaChange = (e) => {
-    setTextareaData(e.target.value); // Allow manual text entry
+  const handlePhoneColumnSelect = (columnName) => {
+    setSelectedPhoneColumn(columnName);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    Swal.fire({
-      title: 'Submitted Text',
-      text: textareaData,
-      icon: 'success',
-    });
+
+    if (!code || !selectedPhoneColumn || !textareaData) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Please select a sender ID, phone column, and compose a message.',
+        icon: 'error',
+      });
+      return;
+    }
+
+    const messages = parsedRows
+      .map((row) => {
+        const phoneNumber = row[selectedPhoneColumn];
+        if (!phoneNumber) return null;
+
+        let customizedMessage = textareaData;
+        headers.forEach((header) => {
+          const placeholder = `{${header}}`;
+          customizedMessage = customizedMessage.replace(
+            new RegExp(placeholder, 'g'),
+            row[header] || ''
+          );
+        });
+
+        return { phoneNumber, message: customizedMessage };
+      })
+      .filter(Boolean); // Remove null entries for rows without phone numbers
+
+    if (messages.length === 0) {
+      Swal.fire({
+        title: 'Error',
+        text: 'No valid phone numbers found.',
+        icon: 'error',
+      });
+      return;
+    }
+
+    const payload = {
+      code:code,
+      phoneNumber : messages.map((mess)=>mess.phoneNumber),
+      message :  messages.map((mess)=>mess.message),
+    };
+
+    console.log(payload)
+   
+   
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}group-sms-fileCustom`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.text()
+
+      console.log(result)
+      if(result == "Successfully processed all messages."){
+        Swal.fire({
+          title: 'Success',
+          text: 'Messages sent successfully!',
+          icon: 'success',
+        });
+      }else{
+        Swal.fire({
+          title: 'Error',
+          text: 'Failed to send messages.',
+          icon: 'error',
+        });
+      }
+
+      if (response.ok) {
+        Swal.fire({
+          title: 'Success',
+          text: 'Messages sent successfully!',
+          icon: 'success',
+        });
+      } else {
+        const error = await response.json();
+        Swal.fire({
+          title: 'Error',
+          text: error.message || 'Failed to send messages.',
+          icon: 'error',
+        });
+      }
+    } catch (err) {
+      console.error('Submission error:', err);
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred while sending the messages.',
+        icon: 'error',
+      });
+    }
   };
 
   useEffect(() => {
@@ -83,7 +194,7 @@ function GroupsmsFileCustom() {
                 <CAlert color="primary" variant="solid" className="d-flex align-items-center" xs={10}>
                   <CIcon icon={cilSpeech} className="flex-shrink-0 me-2" width={34} height={34} />
                   <div>
-                    <h3>Send Sms</h3>
+                    <h3>Send SMS</h3>
                   </div>
                 </CAlert>
               </CCardTitle>
@@ -96,7 +207,7 @@ function GroupsmsFileCustom() {
                     onChange={(e) => setCode(e.target.value)}
                     style={{ borderColor: 'rgba(71, 71, 212,0.6)' }}
                   >
-                    <option value="">Select Sender Id</option>
+                    <option value="">Select Sender ID</option>
                     {organisationfetch.map((data, index) => (
                       <option key={index} value={data.org_Code}>
                         {data.url}
@@ -104,6 +215,7 @@ function GroupsmsFileCustom() {
                     ))}
                   </CFormSelect>
                 </div>
+
                 <div className="mb-3">
                   <CFormInput
                     type="file"
@@ -113,36 +225,58 @@ function GroupsmsFileCustom() {
                     style={{ borderColor: 'rgba(71, 71, 212,0.6)' }}
                   />
                 </div>
+
                 {headers.length > 0 && (
                   <div className="mb-3">
-                    <h5>Columns:</h5>
-                    {headers.map((header) => (
-                      <CButton
-                        key={header}
-                        color="primary"
-                        className="m-1"
-                        onClick={() => handleColumnButtonClick(header)}
-                      >
-                        {header}
-                      </CButton>
-                    ))}
+                    <CFormLabel>Select a Column for Phone Numbers</CFormLabel>
+                    <CFormSelect
+                      id="phoneColumnSelect"
+                      value={selectedPhoneColumn}
+                      onChange={(e) => handlePhoneColumnSelect(e.target.value)}
+                      style={{ borderColor: 'rgba(71, 71, 212,0.6)' }}
+                    >
+                      <option value="">Select a Column</option>
+                      {headers.map((header, index) => (
+                        <option key={index} value={header}>
+                          {header}
+                        </option>
+                      ))}
+                    </CFormSelect>
                   </div>
                 )}
+
+                {headers.length > 0 && (
+                  <div className="mb-3">
+                    <CFormLabel>Select Columns to Include in the Message</CFormLabel>
+                    <div className="d-flex flex-wrap gap-2">
+                      {headers.map((header, index) => (
+                        <CButton
+                          key={index}
+                          color="primary"
+                          onClick={() => handleColumnSelect(header)}
+                          style={{ minWidth: '120px' }}
+                        >
+                          {header}
+                        </CButton>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mb-3">
-                  <CFormLabel htmlFor="exampleFormControlTextarea1">Message with Column Data</CFormLabel>
+                  <CFormLabel htmlFor="messageInput">Message</CFormLabel>
                   <CFormTextarea
-                    id="exampleFormControlTextarea1"
+                    id="messageInput"
                     rows={6}
                     value={textareaData}
-                    onChange={handleTextareaChange}
+                    onChange={(e) => setTextareaData(e.target.value)}
                     style={{ borderColor: 'rgba(71, 71, 212,0.6)' }}
-                  ></CFormTextarea>
+                  />
                 </div>
-                <div className="col-auto">
-                  <CButton color="primary" type="submit" className="mb-3">
-                    SUBMIT
-                  </CButton>
-                </div>
+
+                <CButton color="primary" type="submit">
+                  SUBMIT
+                </CButton>
               </CForm>
             </CCardBody>
           </CCard>

@@ -85,29 +85,29 @@ const Login = () => {
         })
 
         Cookies.set('username', responseData.user, {
-          expires: 7,
+          expires: 1,
           secure: true,
           sameSite: 'Strict',
           path: '/',
         });
         Cookies.set('role', responseData.role, {
-          expires: 7,
+          expires: 1,
           secure: true,
           sameSite: 'Strict',
           path: '/',
         });
         Cookies.set('refreshToken', responseData.accessToken, {
-          expires: 7,
+          expires: 1,
           secure: true,
           sameSite: 'Strict',
           path: '/',
         });Cookies.set('responseMessage', responseData.responseMessage, {
-          expires: 7,
+          expires: 1,
           secure: true,
           sameSite: 'Strict',
           path: '/',
         });Cookies.set('groupId', responseData.groupId, {
-          expires: 7,
+          expires: 1,
           secure: true,
           sameSite: 'Strict',
           path: '/',

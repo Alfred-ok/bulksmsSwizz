@@ -71,13 +71,28 @@ const _nav = [
         roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
         role:"User"
       },
+      
       {
         component: CNavItem,
-        name: 'Sent Messages',
-        to: '/sent-messages',
+        name: 'Send group sms',
+        to: '/groups-sms',
         roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
         role:"User"
       },
+      {
+        component: CNavItem,
+        name: 'Send Group Sms by File',
+        to: '/groups-sms-file',
+        roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
+        role:"User"
+      },
+      {
+        component: CNavItem,
+        name: 'Send Group Sms by Custom file',
+        to: '/groups-sms-file-custom',
+        roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
+        role:"User"
+      }
     ],
     
   },
@@ -105,6 +120,22 @@ const _nav = [
         roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
         role:"User"
       },
+      
+    ],
+    
+  },
+
+
+
+  
+  {
+    component: CNavGroup,
+    name: 'Contacts',
+    to: '/',
+    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+    roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
+    role:"User",
+    items: [
       {
         component: CNavItem,
         name: 'Contact List',
@@ -114,7 +145,7 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Add Group Contact',
+        name: 'Add Contact to Groups',
         to: '/contacts',
         roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
         role:"User"
@@ -135,36 +166,12 @@ const _nav = [
 
   
   {
-    component: CNavGroup,
-    name: 'SMS Overview',
-    to: '/',
+    component: CNavItem,
+    name: 'Reports',
+    to: '/sent-messages',
     icon: <CIcon icon={cilSpeech} customClassName="nav-icon" />,
     roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
     role:"User",
-    items: [
-      {
-        component: CNavItem,
-        name: 'Send group sms',
-        to: '/groups-sms',
-        roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
-        role:"User"
-      },
-      {
-        component: CNavItem,
-        name: 'Send Group Sms by File',
-        to: '/groups-sms-file',
-        roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
-        role:"User"
-      },
-      {
-        component: CNavItem,
-        name: 'Send Group Sms by Custom file',
-        to: '/groups-sms-file-custom',
-        roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
-        role:"User"
-      }
-      
-    ],
     
   },
 
