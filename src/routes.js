@@ -21,7 +21,7 @@ const Organisation = React.lazy(()=>import('./views/organisations/OrganisationLi
 const OrganisationRegistration = React.lazy(()=>import('./views/organisations/OrganisationRegistration'))
 const User = React.lazy(()=>import('./views/organisations/userAccounts/UserList'))
 const RegisterUser = React.lazy(()=>import('./views/organisations/userAccounts/RegisterUser'))
-const groups = React.lazy(()=>import('./views/groups/Groups'))
+const groups = React.lazy(()=>import('./views/groups/groups'))
 const CreateNewGroup = React.lazy(()=>import('./views/groups/CreateNewGroup'))
 
 const Contact = React.lazy(()=>import('./views/contacts/contact'))

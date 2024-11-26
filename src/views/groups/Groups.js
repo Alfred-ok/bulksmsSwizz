@@ -15,7 +15,7 @@ import Cookies from 'js-cookie';
 
 
 
-function Groups() {
+function groups() {
 
     const [org_data, setOrg_Data] = useState([]);
     const [visible, setVisible] = useState(false);
@@ -362,6 +362,6 @@ function Groups() {
   )
 }
 
-export default Groups
+export default groups
 
 
