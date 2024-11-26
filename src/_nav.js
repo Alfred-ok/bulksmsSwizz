@@ -108,7 +108,7 @@ const _nav = [
     items: [
       {
         component: CNavItem,
-        name: 'Group',
+        name: 'Groups',
         to: '/groups',
         roleCode: 'ProT_917201762349',//User == 'ProT_917201762349' },
         role:"User"
