@@ -103,7 +103,7 @@ function Groups() {
     
         try {
             
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}groups/${data.groupId}`, {
+            const response = await fetch(`https://81c9-69-197-145-100.ngrok-free.app/groups/${data.groupId}`, {
                 method: 'PUT', // Specify the request method as POST
                 headers: {
                     'Content-Type': 'application/json', // Set the content type to JSON
